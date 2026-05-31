@@ -1,6 +1,7 @@
 from llama_index.core import VectorStoreIndex
 
-from rag.embedding.gemini import GeminiEmbedding
+# from rag.embedding.gemini import GeminiEmbedding
+from rag.embedding.huggingface import HuggingFaceEmbeddingModel
 from rag.vectorstores.chroma import ChromaStore
 
 class Retriever:
@@ -10,7 +11,7 @@ class Retriever:
         index = (
             VectorStoreIndex.from_vector_store(
                 vector_store=ChromaStore().get_store(),
-                embed_model=GeminiEmbedding().get_model()
+                embed_model=HuggingFaceEmbeddingModel().get_model()
             )
         )
 

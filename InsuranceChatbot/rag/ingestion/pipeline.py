@@ -3,7 +3,8 @@ from llama_index.core import (
     StorageContext,
     SimpleDirectoryReader
 )
-from rag.embedding.gemini import GeminiEmbedding
+# from rag.embedding.gemini import GeminiEmbedding
+from rag.embedding.huggingface import HuggingFaceEmbeddingModel
 from rag.vectorstores.chroma import ChromaStore
 from .chunker import Chunker
 
@@ -36,5 +37,5 @@ class IngestionPipeline:
         VectorStoreIndex(
             nodes=nodes,
             storage_context=storage_context,
-            embed_model=GeminiEmbedding().get_model()
+            embed_model=HuggingFaceEmbeddingModel().get_model()
         )

@@ -1,0 +1,17 @@
+Acme Technologies was founded in 2018 by Rahul Sharma and Priya Mehta in Bengaluru, India. The company specializes in cloud-native software solutions for healthcare organizations.
+
+In 2019, Acme Technologies launched its first product, HealthFlow, a patient workflow management platform designed for hospitals and clinics.
+
+By 2020, the company had expanded to three cities: Bengaluru, Hyderabad, and Pune. During the same year, Acme hired its first 50 employees.
+
+In March 2021, Acme secured Series A funding of $5 million from Horizon Ventures. The funding was used to expand engineering teams and improve cloud infrastructure.
+
+In 2022, the company launched MedInsight, an analytics platform that helps hospitals analyze patient outcomes and operational efficiency.
+
+By 2023, Acme Technologies was serving over 200 hospitals across India and processing approximately 10 million patient records annually.
+
+The company received the Healthcare Innovation Award in 2024 for its contributions to digital healthcare transformation.
+
+As of 2025, Acme Technologies employs 350 people and maintains offices in Bengaluru, Hyderabad, Pune, and Chennai. Rahul Sharma serves as the Chief Executive Officer, while Priya Mehta serves as the Chief Technology Officer.
+
+The company's long-term vision is to use artificial intelligence and cloud computing to improve healthcare accessibility and patient outcomes across Asia.
