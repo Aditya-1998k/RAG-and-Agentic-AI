@@ -1,0 +1,15 @@
+# This file lists the dependencies for the project. You can install them using:
+# pip install -r requirements.txt
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+python-multipart
+
+# LLM and embedding dependencies
+llama-index
+llama-index-llms-google-genai
+llama-index-embeddings-google-genai
+llama-index-vector-stores-chroma
+chromadb
