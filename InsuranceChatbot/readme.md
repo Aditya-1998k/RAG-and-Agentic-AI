@@ -1,44 +1,90 @@
 # RAG Platform
 
-A production-oriented Retrieval-Augmented Generation (RAG) application built using **Python**, **FastAPI**, **LlamaIndex**, **Google Gemini**, and **ChromaDB**.
+A production-oriented Retrieval-Augmented Generation (RAG) application built using **Python**, **FastAPI**, **LlamaIndex**, **ChromaDB**, **Hugging Face Embeddings**, **Ollama**, and **Gradio**.
 
-The project is designed with extensibility in mind, allowing future integration of additional LLMs, embedding providers, and vector databases.
+The project is designed with modular components so that vector stores, embedding models, and LLMs can be replaced with minimal code changes.
 
 ---
 
-## Features
+# Features
 
-* Document ingestion through REST API
-* PDF document support
-* Automatic chunking using LlamaIndex
-* Gemini Embeddings (`text-embedding-004`)
-* ChromaDB persistent vector storage
-* Gemini LLM for response generation
-* FastAPI-based REST APIs
-* Modular architecture for future expansion
+* Document ingestion through REST APIs
+* PDF and text document support
+* Local embeddings using BGE Small
+* Local LLM inference using Ollama
+* ChromaDB vector storage
+* FastAPI backend APIs
+* Gradio chat interface
+* Source-aware retrieval
+* Context-only answering guardrails
+* Modular project structure
 * Swagger/OpenAPI documentation
 
 ---
 
-## Tech Stack
+# Architecture
 
-| Component       | Technology        |
-| --------------- | ----------------- |
-| API Framework   | FastAPI           |
-| LLM             | Gemini            |
-| Embeddings      | Gemini Embeddings |
-| Vector Database | ChromaDB          |
-| RAG Framework   | LlamaIndex        |
-| Language        | Python 3.11+      |
+```text
+                ┌─────────────┐
+                │  Gradio UI  │
+                └──────┬──────┘
+                       │
+                       ▼
+
+                ┌─────────────┐
+                │   FastAPI   │
+                └──────┬──────┘
+                       │
+                       ▼
+
+                ┌─────────────┐
+                │ RAG Service │
+                └──────┬──────┘
+                       │
+        ┌──────────────┴──────────────┐
+        ▼                             ▼
+
+ ┌─────────────┐              ┌─────────────┐
+ │ Retriever   │              │ Ollama LLM  │
+ └──────┬──────┘              └─────────────┘
+        │
+        ▼
+
+ ┌─────────────┐
+ │ ChromaDB    │
+ └──────┬──────┘
+        │
+        ▼
+
+ ┌─────────────┐
+ │ BGE Small   │
+ │ Embeddings  │
+ └─────────────┘
+```
 
 ---
 
-## Project Structure
+# Technology Stack
+
+| Component       | Technology             |
+| --------------- | ---------------------- |
+| Backend API     | FastAPI                |
+| UI              | Gradio                 |
+| RAG Framework   | LlamaIndex             |
+| Vector Database | ChromaDB               |
+| Embeddings      | BAAI/bge-small-en-v1.5 |
+| LLM             | Qwen2.5 via Ollama     |
+| Language        | Python                 |
+
+---
+
+# Project Structure
 
 ```text
 rag-platform/
 
 ├── main.py
+├── ui.py
 │
 ├── api/
 │   └── routes/
@@ -55,26 +101,23 @@ rag-platform/
 │   │
 │   ├── llms/
 │   │   ├── base.py
-│   │   ├── gemini.py
-│   │   └── openai.py
+│   │   └── ollama.py
 │   │
-│   ├── embeddings/
+│   ├── embedding/
 │   │   ├── base.py
-│   │   ├── gemini.py
-│   │   └── hf.py
+│   │   └── huggingface.py
 │   │
 │   ├── vectorstores/
 │   │   ├── base.py
-│   │   ├── chroma.py
-│   │   └── qdrant.py
+│   │   └── chroma.py
 │   │
 │   ├── ingestion/
 │   │   ├── pipeline.py
 │   │   ├── chunker.py
 │   │   └── metadata.py
 │   │
-│   ├── retrieval/
-│   │   ├── retriever.py
+│   ├── retrival/
+│   │   ├── retrieval.py
 │   │   ├── reranker.py
 │   │   └── hybrid.py
 │   │
@@ -85,15 +128,14 @@ rag-platform/
 ├── chroma_db/
 │
 ├── .env
-│
+├── .env.example
 ├── requirements.txt
-│
 └── README.md
 ```
 
 ---
 
-## Installation
+# Installation
 
 Clone the repository:
 
@@ -103,21 +145,21 @@ git clone <repository-url>
 cd rag-platform
 ```
 
-Create a virtual environment:
+Create virtual environment:
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the environment:
+Activate:
 
-Linux / macOS:
+Linux / macOS
 
 ```bash
 source .venv/bin/activate
 ```
 
-Windows:
+Windows
 
 ```powershell
 .venv\Scripts\activate
@@ -131,34 +173,56 @@ pip install -r requirements.txt
 
 ---
 
-## Environment Variables
+# Install Ollama
 
-Create a `.env` file in the project root.
+Download and install:
+
+https://ollama.com/download
+
+Verify installation:
+
+```bash
+ollama --version
+```
+
+Start Ollama:
+
+```bash
+ollama serve
+```
+
+Pull Qwen model:
+
+```bash
+ollama pull qwen2.5:3b
+```
+
+Verify:
+
+```bash
+ollama list
+```
+
+---
+
+# Environment Variables
+
+Create `.env`
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key
-
 VECTOR_DB_PATH=./chroma_db
-
 CHROMA_COLLECTION=documents
-
 TOP_K=5
 ```
 
 ---
 
-## Running the Application
+# Running the Backend
 
-Start the FastAPI server:
+Start FastAPI:
 
 ```bash
 uvicorn main:app --reload
-```
-
-Application:
-
-```text
-http://localhost:8000
 ```
 
 Swagger UI:
@@ -167,154 +231,167 @@ Swagger UI:
 http://localhost:8000/docs
 ```
 
-OpenAPI Schema:
+---
+
+# Running Gradio UI
+
+Start backend first.
+
+Open another terminal:
+
+```bash
+python ui.py
+```
+
+Open:
 
 ```text
-http://localhost:8000/openapi.json
+http://localhost:7860
 ```
 
 ---
 
-## Document Ingestion
+# Document Ingestion
 
-The document is:
+Upload PDF using:
 
-1. Uploaded to the `data/` directory
-2. Parsed by LlamaIndex
-3. Chunked using SentenceSplitter
-4. Embedded using Gemini Embeddings
-5. Stored in ChromaDB
-
-Example Response:
-
-```json
-{
-  "message": "document indexed",
-  "file": "AWS_Guide.pdf"
-}
+```http
+POST /ingest
 ```
+
+or place documents inside:
+
+```text
+data/
+```
+
+Supported formats:
+
+* PDF
+* TXT
+* DOCX
+* Markdown
+* CSV
+* HTML
 
 ---
 
-## Querying Documents
-
-Endpoint:
+# Query Endpoint
 
 ```http
 POST /query
 ```
 
-Request:
-
-```json
-{
-  "question": "What is AWS Lambda?"
-}
-```
-
-Response:
-
-```json
-{
-  "answer": "AWS Lambda is a serverless compute service..."
-}
-```
-
 ---
 
-## RAG Workflow
+# Guardrails
+
+The application includes basic RAG guardrails.
+
+Rules:
+
+* Answer only from retrieved context
+* Do not use model knowledge
+* Do not hallucinate
+* Reject unsupported questions
+* Return fallback response when answer is unavailable
+
+Fallback response:
 
 ```text
-User Query
-    │
-    ▼
+I could not find the answer in the provided documents.
+```
 
-Retriever
-    │
-    ▼
+Prompt enforcement:
 
-ChromaDB
-    │
-    ▼
-
-Relevant Chunks
-    │
-    ▼
-
-Gemini LLM
-    │
-    ▼
-
-Generated Answer
+```text
+1. Answer ONLY from context.
+2. Do NOT make assumptions.
+3. Do NOT use external knowledge.
+4. If answer is not found, return fallback response.
 ```
 
 ---
 
-## Supported Documents
+# Sample Dataset
 
-Current support:
+Create:
 
-* PDF
-* TXT
-* Markdown
-* DOCX
-* HTML
-* CSV
+```text
+data/company_story.txt
+```
 
-Supported through LlamaIndex document readers.
+Content:
 
----
-
-## Future Enhancements
-
-### Retrieval
-
-* Hybrid Search
-* BM25 Search
-* Metadata Filtering
-* Multi-Vector Retrieval
-
-### Ranking
-
-* Cohere Reranker
-* Jina Reranker
-* BGE Reranker
-
-### Vector Databases
-
-* Qdrant
-* pgvector
-* Weaviate
-* Pinecone
-
-### LLM Providers
-
-* OpenAI
-* Anthropic Claude
-* Ollama
-* Azure OpenAI
-
-### Production Features
-
-* JWT Authentication
-* RBAC
-* Multi-tenancy
-* OpenTelemetry
-* Prometheus Metrics
-* Grafana Dashboards
-* CI/CD Pipelines
-* Docker
-* Kubernetes
-* Terraform
+```text
+Acme Technologies was founded in 2018 by Rahul Sharma and Priya Mehta in Bengaluru, India.
+The company specializes in cloud-native software solutions for healthcare organizations.
+In 2019, Acme Technologies launched its first product, HealthFlow.
+In 2020, the company expanded to Bengaluru, Hyderabad, and Pune and hired its first 50 employees.
+In March 2021, Acme secured Series A funding of $5 million from Horizon Ventures.
+In 2022, the company launched MedInsight.
+By 2023, Acme was serving over 200 hospitals across India and processing approximately 10 million patient records annually.
+The company received the Healthcare Innovation Award in 2024.
+As of 2025, Acme employs 350 people and maintains offices in Bengaluru, Hyderabad, Pune, and Chennai.
+Rahul Sharma serves as CEO and Priya Mehta serves as CTO.
+The long-term vision of the company is to use AI and cloud computing to improve healthcare accessibility across Asia.
+```
 
 ---
 
-## Development Roadmap
+# Sample Questions
 
-### Phase 1
+## Basic Retrieval
 
-* [x] FastAPI Setup
-* [x] PDF Upload
-* [x] Gemini Embeddings
+```text
+Who founded Acme Technologies?
+When was Acme Technologies founded?
+What was the first product launched by Acme?
+Who is the CEO?
+Who is the CTO?
+What is MedInsight?
+```
+
+---
+
+# Embedding Model
+
+```text
+BAAI/bge-small-en-v1.5
+```
+
+Benefits:
+
+* Free
+* Runs locally
+* Fast
+* Good retrieval quality
+* No API costs
+
+---
+
+# LLM Model
+
+```text
+qwen2.5:3b
+```
+
+Benefits:
+
+* Local inference
+* Small memory footprint
+* Good instruction following
+* Suitable for RAG
+
+---
+
+# Development Roadmap
+
+## Phase 1
+
+* [x] FastAPI
 * [x] ChromaDB
-* [x] Basic Query Endpoint
+* [x] Ollama
+* [x] BGE Embeddings
+* [x] Gradio UI
+
