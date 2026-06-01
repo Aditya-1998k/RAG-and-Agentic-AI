@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     VECTOR_DB_PATH: str = "./chroma_db"
     CHROMA_COLLECTION: str = "documents"
     TOP_K: int = 5
+    LLM_PROVIDER: str = "ollama"  # Options: "gemini" or "ollama"
 
     class Config:
         env_file = ".env"

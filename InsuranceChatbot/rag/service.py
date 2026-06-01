@@ -1,4 +1,4 @@
-from rag.llms.ollama import OllamaLLM
+from rag.llms.factory import LLMFactory
 from rag.retrival.retrieval import Retriever
 from rag.retrival.reranker import Reranker
 
@@ -9,7 +9,7 @@ class RAGService:
 
         self.retriever = Retriever()
         self.reranker = Reranker()
-        self.llm = OllamaLLM()
+        self.llm = LLMFactory.create_llm()
 
     def query(self, question):
 
